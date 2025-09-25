@@ -41,9 +41,9 @@ def read_nifti_image(file_path: str, as_tensor: bool = False) -> torch.Tensor | 
     img_bone = Image.fromarray(rgb, mode='RGB').convert("RGB")
     return img_bone
 ```
-You can changed the visualization style here. I used bone colormap here.
+**You can change the way you visualize 1-channel nifti image here**
+ I used bone colormap here.
 
-**You can change the way you deal with 1-channel nifti image here**
 
 ## 3. Modify `visualizer.py` to be compatible with nii extension
 File ~/miniconda3/envs/anomalib/lib/python3.10/site-packages/anomalib/visualization/image/visualizer.py:223, in ImageVisualizer.on_test_batch_end(***failed resolving arguments***)
