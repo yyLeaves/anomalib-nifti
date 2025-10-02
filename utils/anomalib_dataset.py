@@ -30,9 +30,9 @@ def read_nifti_image(file_path: str, as_tensor: bool = False) -> torch.Tensor | 
     import cv2
     from PIL import Image
     nifti_image = nib.load(file_path).get_fdata()
-    normalized_image = (nifti_image - np.min(nifti_image)) / (np.max(nifti_image) - np.min(nifti_image))
-    image = np.stack([normalized_image, normalized_image, normalized_image], axis=-1)  # (H, W, 3)
-    gray = (normalized_image * 255).astype(np.uint8)
+    # normalized_image = (nifti_image - np.min(nifti_image)) / (np.max(nifti_image) - np.min(nifti_image))
+    image = np.stack([nifti_image, nifti_image, nifti_image], axis=-1)  # (H, W, 3)
+    gray = (nifti_image * 255).astype(np.uint8)
     bgr = cv2.applyColorMap(gray, cv2.COLORMAP_BONE)
     rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
     # img_bone = Image.fromarray(rgb, mode='RGB').convert("RGB")
