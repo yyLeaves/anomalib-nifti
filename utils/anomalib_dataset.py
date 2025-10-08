@@ -29,15 +29,20 @@ def read_nifti_image(file_path: str, as_tensor: bool = False) -> torch.Tensor | 
     # (H, W, D)
     import cv2
     from PIL import Image
+    if not file_path.endswith('.nii'):
+        image = Image.open(file_path).convert("RGB")
+        return to_dtype(to_image(image), torch.float32, scale=True) if as_tensor else np.array(image)
+
     nifti_image = nib.load(file_path).get_fdata()
-    # normalized_image = (nifti_image - np.min(nifti_image)) / (np.max(nifti_image) - np.min(nifti_image))
-    image = np.stack([nifti_image, nifti_image, nifti_image], axis=-1)  # (H, W, 3)
-    gray = (nifti_image * 255).astype(np.uint8)
-    bgr = cv2.applyColorMap(gray, cv2.COLORMAP_BONE)
-    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-    # img_bone = Image.fromarray(rgb, mode='RGB').convert("RGB")
-    img_bone_normalized = rgb / 255.0
-    return to_dtype(to_image(img_bone_normalized), torch.float32, scale=True) if as_tensor else img_bone_normalized / 255.0
+    if nifti_image.ndim == 4 and nifti_image.shape[2] == 1:
+            nifti_image = np.squeeze(nifti_image, axis=2)
+    elif nifti_image.ndim == 2:
+        image = np.stack([nifti_image, nifti_image, nifti_image], axis=-1)  # (H, W, 3)
+        gray = (nifti_image * 255).astype(np.uint8)
+        bgr = cv2.applyColorMap(gray, cv2.COLORMAP_BONE)
+        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        nifti_image = rgb / 255.0
+    return to_dtype(to_image(nifti_image), torch.float32, scale=True) if as_tensor else nifti_image
 
 
 def read_nifti_mask(path: str | Path, as_tensor: bool = False) -> torch.Tensor | np.ndarray:
