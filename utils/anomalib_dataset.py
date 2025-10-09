@@ -82,7 +82,10 @@ def __getitem__(self, index: int) -> DatasetItem:
             gt_mask = Mask(torch.zeros(image.shape[-2:])).to(torch.uint8)
         elif label_index == LabelName.ABNORMAL:
             # Read mask for anomalous samples
-            gt_mask = read_nifti_mask(mask_path, as_tensor=True)
+            if mask_path.endswith(".nii"):
+                gt_mask = read_nifti_mask(mask_path, as_tensor=True)
+            else:
+                gt_mask = read_mask(mask_path, as_tensor=True)
         # For UNKNOWN, gt_mask remains None
 
     # Apply augmentations if available
